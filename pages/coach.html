@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="ErgoAI Live Workspace Ergonomics Coach">
+
+    <title>Live Coach — ErgoAI</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <style>
+
+        body {
+            background: #f4f7f5;
+        }
+
+        .coach-page {
+            min-height: 100vh;
+        }
+
+        .coach-nav {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #e3e9e5;
+        }
+
+        .coach-nav-inner {
+            width: min(1280px, 92%);
+            height: 100%;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .coach-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .coach-nav-right a {
+            color: #68756f;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .coach-nav-right a:hover {
+            color: #2f8c68;
+        }
+
+        .coach-container {
+            width: min(1280px, 92%);
+            margin: auto;
+            padding: 45px 0 70px;
+        }
+
+        .coach-heading {
+            margin-bottom: 30px;
+        }
+
+        .coach-heading small {
+            color: #3c9670;
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: 1.7px;
+        }
+
+        .coach-heading h1 {
+            margin-top: 8px;
+            margin-bottom: 8px;
+
+            color: #17251f;
+            font-size: 38px;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+        }
+
+        .coach-heading p {
+            color: #718079;
+            font-size: 14px;
+        }
+
+        .coach-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.5fr)
+                minmax(320px, 0.7fr);
+
+            gap: 22px;
+        }
+
+        .camera-panel {
+            overflow: hidden;
+
+            border: 1px solid #dfe7e2;
+            border-radius: 18px;
+
+            background: #172923;
+
+            box-shadow:
+                0 20px 50px rgba(28, 64, 51, 0.08);
+        }
+
+        .camera-header {
+            height: 58px;
+            padding: 0 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .camera-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 750;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #61d69e;
+        }
+
+        .camera-status {
+            color: #829b90;
+            font-size: 9px;
+        }
+
+        .camera-area {
+            position: relative;
+
+            min-height: 520px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #28473b 0%,
+                    #172923 65%
+                );
+        }
+
+        .camera-placeholder {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .camera-icon-large {
+            width: 75px;
+            height: 75px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+
+            background: rgba(255,255,255,0.05);
+
+            color: #7fd8a9;
+            font-size: 30px;
+        }
+
+        .camera-placeholder h2 {
+            margin-bottom: 8px;
+
+            font-size: 19px;
+        }
+
+        .camera-placeholder p {
+            max-width: 330px;
+
+            margin: auto;
+
+            color: #9aafa5;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .camera-controls {
+            position: absolute;
+
+            left: 50%;
+            bottom: 25px;
+
+            transform: translateX(-50%);
+
+            display: flex;
+            gap: 10px;
+        }
+
+        .coach-button {
+            border: 0;
+            border-radius: 9px;
+
+            padding: 12px 19px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .start-button {
+            background: #4ba477;
+            color: white;
+        }
+
+        .start-button:hover {
+            background: #3d9168;
+        }
+
+        .stop-button {
+            display: none;
+
+            background: #ffffff;
+            color: #263a31;
+        }
+
+        .analysis-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .score-card {
+            padding: 22px;
+
+            border: 1px solid #dfe7e2;
+            border-radius: 16px;
+
+            background: #ffffff;
+        }
+
+        .score-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 18px;
+        }
+
+        .score-header span {
+            color: #7b8781;
+            font-size: 9px;
+            font-weight: 850;
+            letter-spacing: 1.2px;
+        }
+
+        .score-status {
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            background: #edf7f2;
+
+            color: #3c9670;
+
+            font-size: 9px;
+            font-weight: 750;
+        }
+
+        .score-value {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .score-value strong {
+            color: #1d3a2e;
+            font-size: 55px;
+            line-height: 1;
+            letter-spacing: -3px;
+        }
+
+        .score-value span {
+            color: #89948f;
+            font-size: 12px;
+        }
+
+        .score-description {
+            margin-top: 10px;
+
+            color: #7b8781;
+            font-size: 11px;
+        }
+
+        .metrics-card {
+            padding: 22px;
+
+            border: 1px solid #dfe7e2;
+            border-radius: 16px;
+
+            background: #ffffff;
+        }
+
+        .card-title {
+            margin-bottom: 18px;
+
+            color: #263830;
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        .metric {
+            margin-bottom: 17px;
+        }
+
+        .metric:last-child {
+            margin-bottom: 0;
+        }
+
+        .metric-top {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 7px;
+        }
+
+        .metric-top span {
+            color: #697770;
+            font-size: 11px;
+        }
+
+        .metric-state {
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+        .good {
+            color: #3b9a6d;
+        }
+
+        .warning {
+            color: #c38b31;
+        }
+
+        .metric-bar {
+            height: 5px;
+
+            overflow: hidden;
+
+            border-radius: 10px;
+
+            background: #e9eeeb;
+        }
+
+        .metric-fill {
+            height: 100%;
+
+            border-radius: inherit;
+
+            background: #54a97e;
+        }
+
+        .metric-fill.warning-fill {
+            background: #d1a14c;
+        }
+
+        .coach-message {
+            padding: 20px;
+
+            border: 1px solid #cfe4d9;
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #edf8f2,
+                    #ffffff
+                );
+        }
+
+        .coach-message-header {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            margin-bottom: 11px;
+        }
+
+        .coach-message-icon {
+            width: 28px;
+            height: 28px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: #d9f0e4;
+
+            color: #318c66;
+        }
+
+        .coach-message-header span {
+            color: #3c9670;
+            font-size: 9px;
+            font-weight: 850;
+            letter-spacing: 1px;
+        }
+
+        .coach-message p {
+            color: #3d5047;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .session-card {
+            padding: 18px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border: 1px solid #dfe7e2;
+            border-radius: 16px;
+
+            background: #ffffff;
+        }
+
+        .session-card span {
+            display: block;
+
+            color: #88938e;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .session-card strong {
+            display: block;
+
+            margin-top: 4px;
+
+            color: #31443b;
+            font-size: 17px;
+        }
+
+        .session-indicator {
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #c5cfca;
+        }
+
+        .session-indicator.active {
+            background: #52b17f;
+
+            box-shadow:
+                0 0 0 5px rgba(82,177,127,0.12);
+        }
+
+        @media (max-width: 900px) {
+
+            .coach-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .analysis-panel {
+                display: grid;
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .coach-message {
+                grid-column: span 2;
+            }
+
+            .session-card {
+                grid-column: span 2;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .coach-container {
+                padding-top: 30px;
+            }
+
+            .coach-heading h1 {
+                font-size: 31px;
+            }
+
+            .camera-area {
+                min-height: 430px;
+            }
+
+            .analysis-panel {
+                display: flex;
+            }
+
+            .coach-message,
+            .session-card {
+                grid-column: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="coach-page">
+
+
+    <!-- NAVIGATION -->
+
+    <header class="coach-nav">
+
+        <div class="coach-nav-inner">
+
+            <a href="../index.html"
+               class="brand">
+
+                <span class="brand-mark">
+                    E
+                </span>
+
+                <span class="brand-text">
+                    Ergo<span>AI</span>
+                </span>
+
+            </a>
+
+
+            <div class="coach-nav-right">
+
+                <a href="../index.html">
+                    Home
+                </a>
+
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+
+                <a href="insights.html">
+                    Insights
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- MAIN -->
+
+    <main class="coach-container">
+
+
+        <div class="coach-heading">
+
+            <small>
+                LIVE ERGONOMICS COACH
+            </small>
+
+            <h1>
+                Let's improve your workspace.
+            </h1>
+
+            <p>
+                Position yourself naturally in front of your camera
+                and let ErgoAI analyze your posture.
+            </p>
+
+        </div>
+
+
+        <div class="coach-grid">
+
+
+            <!-- CAMERA -->
+
+            <section class="camera-panel">
+
+                <div class="camera-header">
+
+                    <div class="camera-title">
+
+                        <span class="live-dot"></span>
+
+                        LIVE POSTURE ANALYSIS
+
+                    </div>
+
+                    <span class="camera-status"
+                          id="cameraStatus">
+
+                        Camera inactive
+
+                    </span>
+
+                </div>
+
+
+                <div class="camera-area"
+                     id="cameraArea">
+
+
+                    <video id="cameraVideo"
+                           autoplay
+                           muted
+                           playsinline
+                           style="
+                               display:none;
+                               width:100%;
+                               height:100%;
+                               object-fit:cover;
+                           ">
+                    </video>
+
+
+                    <canvas id="poseCanvas"
+                            style="
+                                display:none;
+                                position:absolute;
+                                inset:0;
+                                width:100%;
+                                height:100%;
+                            ">
+                    </canvas>
+
+
+                    <div class="camera-placeholder"
+                         id="cameraPlaceholder">
+
+                        <div class="camera-icon-large">
+                            ◉
+                        </div>
+
+                        <h2>
+                            Camera ready
+                        </h2>
+
+                        <p>
+                            Start a session to allow ErgoAI to
+                            analyze your posture in real time.
+                        </p>
+
+                    </div>
+
+
+                    <div class="camera-controls">
+
+                        <button class="coach-button start-button"
+                                id="startButton">
+
+                            Start Session
+
+                        </button>
+
+
+                        <button class="coach-button stop-button"
+                                id="stopButton">
+
+                            End Session
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ANALYSIS -->
+
+            <aside class="analysis-panel">
+
+
+                <!-- SCORE -->
+
+                <section class="score-card">
+
+                    <div class="score-header">
+
+                        <span>
+                            ERGONOMICS SCORE
+                        </span>
+
+                        <div class="score-status"
+                             id="scoreStatus">
+
+                            Waiting
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="score-value">
+
+                        <strong id="scoreValue">
+                            —
+                        </strong>
+
+                        <span>
+                            / 100
+                        </span>
+
+                    </div>
+
+
+                    <p class="score-description"
+                       id="scoreDescription">
+
+                        Start a session to calculate
+                        your posture score.
+
+                    </p>
+
+                </section>
+
+
+                <!-- METRICS -->
+
+                <section class="metrics-card">
+
+                    <div class="card-title">
+                        Posture Metrics
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="metric-top">
+
+                            <span>
+                                Head & Neck
+                            </span>
+
+                            <span class="metric-state"
+                                  id="headState">
+
+                                Waiting
+
+                            </span>
+
+                        </div>
+
+                        <div class="metric-bar">
+
+                            <div class="metric-fill"
+                                 id="headBar"
+                                 style="width:0%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="metric-top">
+
+                            <span>
+                                Shoulders
+                            </span>
+
+                            <span class="metric-state"
+                                  id="shoulderState">
+
+                                Waiting
+
+                            </span>
+
+                        </div>
+
+                        <div class="metric-bar">
+
+                            <div class="metric-fill"
+                                 id="shoulderBar"
+                                 style="width:0%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="metric-top">
+
+                            <span>
+                                Back Position
+                            </span>
+
+                            <span class="metric-state"
+                                  id="backState">
+
+                                Waiting
+
+                            </span>
+
+                        </div>
+
+                        <div class="metric-bar">
+
+                            <div class="metric-fill"
+                                 id="backBar"
+                                 style="width:0%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <div class="metric-top">
+
+                            <span>
+                                Sitting Stability
+                            </span>
+
+                            <span class="metric-state"
+                                  id="sittingState">
+
+                                Waiting
+
+                            </span>
+
+                        </div>
+
+                        <div class="metric-bar">
+
+                            <div class="metric-fill"
+                                 id="sittingBar"
+                                 style="width:0%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- AI COACH -->
+
+                <section class="coach-message">
+
+                    <div class="coach-message-header">
+
+                        <div class="coach-message-icon">
+                            ✦
+                        </div>
+
+                        <span>
+                            AI COACH
+                        </span>
+
+                    </div>
+
+
+                    <p id="coachMessage">
+
+                        Start your session and I'll give you
+                        real-time ergonomic feedback.
+
+                    </p>
+
+                </section>
+
+
+                <!-- SESSION -->
+
+                <section class="session-card">
+
+                    <div>
+
+                        <span>
+                            SESSION TIME
+                        </span>
+
+                        <strong id="sessionTime">
+                            00:00:00
+                        </strong>
+
+                    </div>
+
+
+                    <div class="session-indicator"
+                         id="sessionIndicator">
+                    </div>
+
+                </section>
+
+
+            </aside>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script type="module"
+        src="../js/app.js">
+</script>
+
+</body>
+
+</html>
